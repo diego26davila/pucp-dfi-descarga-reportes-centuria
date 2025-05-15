@@ -1,5 +1,5 @@
-const CENTURIA_USER = "20112026";
-const CENTURIA_PASSWORD = ".6!$84whUN";
+const CENTURIA_USER = "";
+const CENTURIA_PASSWORD = "";
 const ID_CONTROL_EJECUCION = "VRI-OGP-2";
 
 const BUCKET_NAME = "dadv-automatizaciones";

@@ -1,6 +1,6 @@
 ### Configuraciones antes de ejecutar el código
 1. Instalar buscadores:
-   - Especificar la ubicación de los archivos con la variable de entorno PLAYWRIGHT_BROWSERS_PATH.
+   - Especificar la ubicación de los archivos con la variable de entorno PLAYWRIGHT_BROWSERS_PATH. Reiniciar el editor (ej. VSC) si se actualiza la variable.
    - Ejecutar el siguiente comando:
      ```
      npx playwright install chromium

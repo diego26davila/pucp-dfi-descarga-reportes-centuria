@@ -15,11 +15,22 @@ async function main() {
     const page = await context.newPage();
 
     await page.goto("https://centuria.pucp.edu.pe/");
-    var solPage = await login(context, page);
+    await login(page);
 
-    while (await solPage.url() != "https://daf.pucp.edu.pe/psp/FIN91PRD/EMPLOYEE/ERP/h/?tab=DEFAULT") {
 
-        const url = new URL(solPage.url());
+    while (await page.url() != "https://daf.pucp.edu.pe/psp/FIN91PRD/EMPLOYEE/ERP/h/?tab=DEFAULT") {
+
+        if (await page.url() == "https://centuria.pucp.edu.pe/php/proxy-centuria.php") {
+
+            console.log("it's special");
+
+            await page.goto("https://centuria.pucp.edu.pe/");
+
+            await login(page);
+
+        }
+
+        const url = new URL(page.url());
         const errorCode = url.searchParams.get("errorCode");
 
         if (errorCode != null) {
@@ -28,26 +39,27 @@ async function main() {
 
                 throw new Error("ERROR: Usuario o contraseña incorrecta")
 
-            } else if ( errorCode == "129" ) {
+            } else if ( errorCode == "129") {
 
-                solPage = await login(context, solPage);
- 
+                await login(page);
+
             } else {
 
-                throw new Error(`ERROR: Error desconocido - URL: ${solPage.url()}`)
+                throw new Error(`ERROR: Error desconocido - URL: ${page.url()}`)
 
             }
         }
+    
     }
 
     try {
 
-        await startReportGeneration(solPage);
+        await startReportGeneration(page);
 
     } catch (e) {
 
         console.log(e);
-        const buffer = await solPage.screenshot();
+        const buffer = await page.screenshot();
         await uploadCenturiaErrorScreenshot(buffer);
 
     }
@@ -56,17 +68,13 @@ async function main() {
 
 }
 
-async function login(context, page) {
+async function login(page) {
 
-    await page.getByPlaceholder("Ingrese su usuario").fill(CENTURIA_USER);
-    await page.getByPlaceholder("Ingrese su contraseña").fill(CENTURIA_PASSWORD);
-
-    const [solPage] = await Promise.all([
-        context.waitForEvent("page"),
-        page.getByRole("button", {name: "Ingresar"}).click()
-    ]);
-
-    return solPage;
+    await page.locator("//div[@class='selected']").click();
+    await page.locator("//ul//span[text()='Centuria Finanzas']").click();
+    await page.locator("//input[@id='userid']").fill(CENTURIA_USER);
+    await page.locator("//input[@id='pwd']").fill(CENTURIA_PASSWORD);
+    await page.getByRole("button", {name: "Ingresar"}).click();
 
 }
 
